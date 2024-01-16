@@ -15,6 +15,8 @@ function divide(num1, num2) {
 }
 
 function operate(num1, num2, operator) {
+    num1 = parseFloat(num1);
+    num2 = parseFloat(num2);
     if(operator === "+") {
         return add(num1, num2);
     } else if(operator === "-") {
@@ -33,6 +35,9 @@ function createNumbers() {
         const numberButton = document.createElement("button");
         numberButton.textContent = `${i}`;
         numberButton.style.cssText = buttonStyle;
+        numberButton.addEventListener('click', () => {
+            display.textContent += numberButton.textContent;
+        });
         numbers.appendChild(numberButton);
         if(i === 1) {
             const dotButton = document.createElement("button");
@@ -54,22 +59,59 @@ function createOperators() {
         operatorButton.textContent = operatorArray[i];
         operatorButton.style.cssText = buttonStyle;
         operators.appendChild(operatorButton);
+        if(i < operatorArray.length - 1) {
+            operatorButton.addEventListener('click', () => {
+                operator = operatorButton.textContent;
+                num1 = display.textContent;
+                display.textContent = "";
+            });
+        } else {
+            operatorButton.addEventListener('click', () => {
+                if(num1 != undefined) {
+                    num2 = display.textContent;
+                    num1 = operate(num1, num2, operator);
+                    display.textContent = num1;
+                }
+            })
+        }
     }
 }
 
+function createDeleteButton() {
+    deleteButton.style.cssText = deleteButtonStyle;
+    deleteButton.textContent = "←";
+    deleteButton.addEventListener('click', () => {
+        display.textContent = display.textContent.slice(0,-1);
+    });
+}
+
 function createAdjusters() {
-    let adjusterArray = ["C", "(", ")", "/"];
+    let adjusterArray = ["C", "/"];
     for(let i = 0; i < adjusterArray.length; i++) {
         const adjusterButton = document.createElement("button");
         adjusterButton.textContent = adjusterArray[i];
         adjusterButton.style.cssText = buttonStyle;
         adjusters.appendChild(adjusterButton);
+        if(i === 0) {
+            adjusterButton.addEventListener('click', () => {
+                display.textContent = '';
+                num1 = '';
+                num2 = '';
+                operator = '';
+            })
+        } else {
+            adjusterButton.addEventListener('click', () => {
+                operator = adjusterButton.textContent;
+                num1 = display.textContent;
+                display.textContent = "";
+            })
+        }
     }
 }
 
 let num1;
 let num2;
-let operator;
+let operator = "";
 const calculator = document.getElementById("calculator");
 const display = document.getElementById("display");
 const numbers = document.getElementById("numbers");
@@ -85,9 +127,9 @@ const calculatorStyle = `
     display: flex;
     justify-content:center;
     flex-direction: column;
-    align-items: center;
-    border: solid black 3px;
+    border: solid black 10px;
     border-radius: 8px;
+    padding: 15px
 `;
 const buttonStyle = `
     width: ${(CALCULATOR_WIDTH-24)/4}px;
@@ -107,10 +149,11 @@ const displayStyle = `
     font-size: 50px;
     font-weight: bold;
     border: solid 2px;
+    margin-left: 5px;
 `;
 
 const deleteButtonStyle = `
-    width: ${(CALCULATOR_WIDTH-24)/4}px;
+    width: ${(CALCULATOR_WIDTH-24)/3}px;
     height: ${(CALCULATOR_WIDTH-24)/8}px;
     border-radius: 8px;
     margin: 3px;
@@ -120,10 +163,8 @@ const deleteButtonStyle = `
 
 calculator.style.cssText = calculatorStyle;
 display.style.cssText = displayStyle;
-deleteButton.style.cssText = deleteButtonStyle;
-deleteButton.textContent = "←";
 
 createNumbers();
 createOperators();
 createAdjusters();
-
+createDeleteButton();
