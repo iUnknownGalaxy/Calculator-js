@@ -1,17 +1,33 @@
 function add(num1, num2) {
-    return num1 + num2;
+    let sum = (num1 + num2).toString();
+    if(sum.length > 13) {
+        sum = sum.substring(0,10)
+    }
+    return sum;
 }
 
 function subtract(num1, num2) {
-    return num1 - num2;
+    let difference = (num1 - num2).toString();
+    if(difference.length > 13) {
+        difference = difference.substring(0,10)
+    }
+    return difference;
 }
 
 function multiply(num1, num2) {
-    return num1 * num2;
+    let product = (num1 * num2).toString();
+    if(product.length > 13) {
+        product = product.substring(0,10)
+    }
+    return product;
 }
 
 function divide(num1, num2) {
-    return num1 / num2;
+    let quotient = (num1 / num2).toString();
+    if(quotient.length > 13) {
+        quotient = quotient.substring(0,10)
+    }
+    return quotient;
 }
 
 function operate(num1, num2, operator) {
@@ -36,13 +52,27 @@ function createNumbers() {
         numberButton.textContent = `${i}`;
         numberButton.style.cssText = buttonStyle;
         numberButton.addEventListener('click', () => {
-            display.textContent += numberButton.textContent;
+            if(operator == "") {
+                display.textContent += numberButton.textContent;
+            } else if(operator != "" && num2 != "") {
+                num2 = "";
+                display.textContent = "" + numberButton.textContent;
+            } else {
+                display.textContent += numberButton.textContent;
+            }
+            
         });
         numbers.appendChild(numberButton);
         if(i === 1) {
             const dotButton = document.createElement("button");
             dotButton.textContent = ".";
             dotButton.style.cssText = buttonStyle;
+            dotButton.addEventListener('click', () => {
+                if(!display.textContent.includes(".")) {
+                    display.textContent += ".";
+                }
+                
+            });
             numbers.appendChild(dotButton);
         }
     }
@@ -61,9 +91,17 @@ function createOperators() {
         operators.appendChild(operatorButton);
         if(i < operatorArray.length - 1) {
             operatorButton.addEventListener('click', () => {
-                operator = operatorButton.textContent;
-                num1 = display.textContent;
-                display.textContent = "";
+                if(operator != "") {
+                    num2 = display.textContent;
+                    num1 = operate(num1, num2, operator);
+                    operator = operatorButton.textContent;
+                    display.textContent = num1;
+                } else {
+                    operator = operatorButton.textContent;
+                    num1 = display.textContent;
+                    display.textContent = "";
+                }
+                
             });
         } else {
             operatorButton.addEventListener('click', () => {
@@ -71,6 +109,7 @@ function createOperators() {
                     num2 = display.textContent;
                     num1 = operate(num1, num2, operator);
                     display.textContent = num1;
+                    operator = "";
                 }
             })
         }
